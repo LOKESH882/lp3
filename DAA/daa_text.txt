@@ -1,0 +1,307 @@
+DAA 1. 
+
+#fibonacci series
+
+def recur_fibo(n):
+    if n <= 1:
+        return n
+    else:
+        return recur_fibo(n - 1) + recur_fibo(n - 2)
+
+def non_recur_fibo(nterms):
+    n1, n2 = 0, 1
+    count = 0
+    if nterms <= 0:
+        print("Please enter a positive integer")
+    elif nterms == 1:
+        print("Fibonacci sequence up to", nterms, ":")
+        print(n1)
+    else:
+        print("Fibonacci sequence:")
+        while count < nterms:
+            print(n1)
+            nth = n1 + n2
+            n1 = n2
+            n2 = nth
+            count += 1
+
+def main():
+    while True:
+        print("\nChoose the method to generate Fibonacci sequence:")
+        print("1. Non-Recursive")
+        print("2. Recursive")
+        print("3. Exit")
+
+        choice = input("Enter your choice (1/2/3): ")
+
+        if choice == '3':
+            print("Exiting the program.")
+            break
+
+        nterms = int(input("How many terms? "))
+
+        if choice == '1':
+            non_recur_fibo(nterms)
+        elif choice == '2':
+            if nterms <= 0:
+                print("Please enter a positive integer")
+            else:
+                print("Fibonacci sequence:")
+                for i in range(nterms):
+                    print(recur_fibo(i))
+        else:
+            print("Invalid choice. Please select 1, 2, or 3.")
+            
+            
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+==================================================================================================================
+
+
+
+DAA 2
+
+# Huffman Encoding 
+import heapq
+
+class Node:
+    def __init__(self, freq, symbol, left=None, right=None):
+        self.freq = freq
+        self.symbol = symbol
+        self.left = left
+        self.right = right
+        self.huff = ''
+
+    def __lt__(self, nxt):
+        return self.freq < nxt.freq
+
+def print_nodes(node, val=''):
+    new_val = val + str(node.huff)
+    if node.left:
+        print_nodes(node.left, new_val)
+    if node.right:
+        print_nodes(node.right, new_val)
+    if not node.left and not node.right:
+        print(f"{node.symbol} -> {new_val}")
+
+def build_huffman_tree(chars, freq):
+    nodes = []
+    for x in range(len(chars)):
+        heapq.heappush(nodes, Node(freq[x], chars[x]))
+
+    while len(nodes) > 1:
+        left = heapq.heappop(nodes)
+        right = heapq.heappop(nodes)
+        left.huff = 0
+        right.huff = 1
+        new_node = Node(left.freq + right.freq, left.symbol + right.symbol, left, right)
+        heapq.heappush(nodes, new_node)
+
+    return nodes[0]
+
+def get_user_input():
+    chars = input("Enter characters separated by spaces: ").split()
+    freq = list(map(int, input("Enter frequencies corresponding to the characters, separated by spaces: ").split()))
+
+    if len(chars) != len(freq):
+        raise ValueError("The number of characters must match the number of frequencies.")
+
+    return chars, freq
+
+def main():
+    try:
+        chars, freq = get_user_input()
+        root = build_huffman_tree(chars, freq)
+        print("Huffman Codes:")
+        print_nodes(root)
+    except ValueError as e:
+        print(f"Error: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+if __name__ == "__main__":
+    main()
+
+
+
+===========================================================================================================================
+
+DAA 3
+
+#fractional knapsack
+
+class Item:
+    def __init__(self, value, weight):
+        self.value = value
+        self.weight = weight
+        self.ratio = value / weight  
+
+def fractional_knapsack(items, capacity):
+    items.sort(key=lambda item: item.ratio, reverse=True)
+    
+    total_value = 0.0 
+    for item in items:
+        if capacity >= item.weight:
+            total_value += item.value
+            capacity -= item.weight
+        else:
+            fraction = capacity / item.weight
+            total_value += item.value * fraction
+            break  # Knapsack is full
+
+    return total_value
+
+if __name__ == "__main__":
+    n = int(input("Enter the number of items: "))
+    
+    items = []
+    for i in range(n):
+        value = float(input(f"Enter value of item {i+1}: "))
+        weight = float(input(f"Enter weight of item {i+1}: "))
+        items.append(Item(value, weight))
+    
+    knapsack_capacity = float(input("Enter the capacity of the knapsack: "))
+    
+    max_value = fractional_knapsack(items, knapsack_capacity)
+    print(f"Maximum value in Knapsack = {max_value:.2f}")
+
+
+
+===========================================================================================================
+
+DAA 4
+
+
+#0-1 knapsack
+
+def knapsack(weights, values, capacity):
+    n = len(values)
+    dp = [[0 for _ in range(capacity + 1)] for _ in range(n + 1)]
+
+    for i in range(n + 1):
+        for w in range(capacity + 1):
+            if i == 0 or w == 0:
+                dp[i][w] = 0
+            elif weights[i-1] <= w:
+                dp[i][w] = max(values[i-1] + dp[i-1][w-weights[i-1]], dp[i-1][w])
+            else:
+                dp[i][w] = dp[i-1][w]
+
+    return dp[n][capacity]
+
+def main():
+    num_items = int(input("Enter the number of items: "))
+    weights = []
+    values = []
+
+    for i in range(num_items):
+        weight = int(input(f"Enter weight of item {i + 1}: "))
+        value = int(input(f"Enter value of item {i + 1}: "))
+        weights.append(weight)
+        values.append(value)
+
+    capacity = int(input("Enter the knapsack capacity: "))
+
+    max_value = knapsack(weights, values, capacity)
+
+    print(f"Maximum value in the knapsack: {max_value}")
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+=======================================================================================================
+
+
+DAA 5
+
+
+#n-queen
+
+
+class NQueens:
+    def __init__(self):
+        self.size = int(input("Enter size of chessboard: "))
+        self.board = [[False] * self.size for _ in range(self.size)]
+        self.count = 0
+
+    def printBoard(self):
+        for row in self.board:
+            for ele in row:
+                print("Q" if ele else "X", end=" ")
+            print()
+        print()
+
+    def isSafe(self, row: int, col: int) -> bool:
+        # Check the column
+        for i in range(self.size):
+            if self.board[i][col]:
+                return False
+        
+        # Check the diagonals
+        for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+            if self.board[i][j]:
+                return False
+        for i, j in zip(range(row, -1, -1), range(col, self.size)):
+            if self.board[i][j]:
+                return False
+        for i, j in zip(range(row, self.size), range(col, -1, -1)):
+            if self.board[i][j]:
+                return False
+        for i, j in zip(range(row, self.size), range(col, self.size)):
+            if self.board[i][j]:
+                return False
+
+        return True
+
+    def set_position_first_queen(self):
+        print("Enter coordinates of the first queen: ")
+        row = int(input(f"Enter row (1-{self.size}): ")) - 1
+        col = int(input(f"Enter column (1-{self.size}): ")) - 1
+        
+        # Ensure the position is valid
+        if 0 <= row < self.size and 0 <= col < self.size:
+            self.board[row][col] = True
+            self.printBoard()
+        else:
+            print("Invalid coordinates. Please try again.")
+            self.set_position_first_queen()  # Retry input
+
+    def solve(self, row: int):
+        if row == self.size:
+            self.count += 1
+            self.printBoard()
+            return
+        
+        # Skip rows that already have a queen
+        if any(self.board[row]):
+            self.solve(row + 1)
+            return
+
+        for col in range(self.size):
+            if self.isSafe(row, col):
+                self.board[row][col] = True
+                self.solve(row + 1)
+                self.board[row][col] = False  # Backtrack
+
+    def displayMessage(self):
+        if self.count > 0:
+            print(f"Total solutions found: {self.count}")
+        else:
+            print("No solutions exist for the given position of the queen.")
+
+if __name__ == "__main__":
+    solver = NQueens()
+    solver.set_position_first_queen()
+    solver.solve(0)
+    solver.displayMessage()
+
